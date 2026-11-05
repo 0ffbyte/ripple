@@ -1,0 +1,22 @@
+## Goals v1.1:
+
+--backend
+[x] better harness, make it smarter and more accurate
+[x] tackle search
+
+--frontend
+
+[x] tool output dynamic ui
+[x] improved intent inference using prepare step
+[x] trace v2.0
+
+[ ] retain under-page interactivity ...
+
+[x] dynamic thread
+
+[x] markdown support
+[x] latest-turn scrolling
+
+[x] chat-overlay basic chat
+
+## Scribbles:

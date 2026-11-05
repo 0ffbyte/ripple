@@ -1,0 +1,46 @@
+{
+  "name": "wxt-react-starter",
+  "description": "manifest.json description",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "wxt",
+    "dev:firefox": "wxt -b firefox",
+    "build": "wxt build",
+    "build:firefox": "wxt build -b firefox",
+    "zip": "wxt zip",
+    "zip:firefox": "wxt zip -b firefox",
+    "compile": "tsc --noEmit",
+    "postinstall": "wxt prepare"
+  },
+  "dependencies": {
+    "@ai-sdk/react": "^4.0.130",
+    "@browser-ai/transformers-js": "^3.0.4",
+    "@streamdown/code": "^2.0.0",
+    "ai": "^7.0.143",
+    "cn": "^0.4.0",
+    "lucide-react": "^1.54.0",
+    "minisearch": "^7.2.0",
+    "motion": "^13.4.6",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "streamdown": "^2.7.0",
+    "three": "^0.186.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/typography": "^0.5.20",
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@types/react-syntax-highlighter": "^15.5.13",
+    "@types/three": "^0.186.0",
+    "@wxt-dev/module-react": "^1.1.5",
+    "postcss-rem-to-responsive-pixel": "^7.0.7",
+    "react-syntax-highlighter": "^16.1.2",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^5.9.3",
+    "web-ext": "^10.5.0",
+    "wxt": "^0.21.3"
+  }
+}

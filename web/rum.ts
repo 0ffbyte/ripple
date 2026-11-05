@@ -1,0 +1,16 @@
+const data = await fetch(
+  "https://duckduckgo.com/qna.js?q=who%20is%20elon%20musk%20influential&vqd=4-112606190010495193603579755002266549100&signal=medium&upgradable=0&run_id=de7fd826-f040-4867-b4ca-395730e186d9&ikey=cTZpgw&perf_id=71bbadff4e6b257f&perf_sampled=0&jsa=1817&jsa_hash=36135488fa52dadce4bd9360b64ef816&dp=iUoVyhQGPYLqz-LP3koQSdrqk5JbG-wTU3uHlTR9p5idbq8Rvc7YsjD_rTBvMQVcg-HC1qHj2IPXkhu6Io00cDv_mt2eANpsSdUufT53TnLv3Bfvb-qn0stP0aBogP9LJ_e4REiruJNKT6s7OYFVi5ISUvCBu7GgU-x-Sng-tPYRNav24A6BMAjsOPjLW3bs.t2w096dzFj09zLQQlnr43w",
+  {
+    headers: {
+      accept: "*/*",
+      "accept-language": "en-GB,en-US;q=0.9,en;q=0.8",
+      "content-type": "application/json",
+      priority: "u=1, i",
+      Referer: "https://duckduckgo.com/",
+    },
+    body: '{"abstracts":["As of January 6, 2025, 15 detainees remain at Guantanamo Bay.  This list of Guantánamo prisoners has the known identities of prisoners at the Guantanamo Bay detention camp in Cuba, but is compiled from various sources and is incomplete. In official documents, the United States Department of Defense (DoD) continues to make intermittent efforts to redact prisoner\'s names. The . ."],"async":{"generation_identifier":"a47676c21cdea330","generation_origin":"e8f13beea23b092d383bbf80a69dbd6d","generation_requested_at":1792853291886},"auto_sorry_reason":null,"bing_market":"en-US","country_code":"DZ","deep_wiki_title":null,"domains":["en.wikipedia.org"],"dominant_result_language":"en","dw":0,"entities":["elon musk"],"fresh_news_required":0,"genericized_query_l0":null,"genericized_query_l1":null,"genericized_query_l2":null,"has_ads":0,"index_wiki_title":"","is_news_heavy":1,"news_heavy_trigger_reasons":["fresh_organics_2d"],"news_slot_rank":1000,"num_top_ten_urls_within_thirty_days":10,"num_top_ten_urls_within_two_days":10,"q":"why%20is%20elon%20musk%20influential","query_language":"en","ranks":[6],"serp_timestamp":1792833360,"spelling_suggestion":null,"supported_wikidata_prop_matches":null,"titles":["List of Guantanamo Bay detainees"],"trigger_version":16,"urls":["https://en.wikipedia.org/wiki/List_of_Guantanamo_Bay_detainees"],"wiki_entities_from_organics":[],"wikidata_ids":[],"wikidata_instance_of_ids":[],"wikidata_property_aliases_in_query":[],"word_shingles_from_organics":[{"count":9,"min_index":1,"rank":0,"word_shingle":"news"},{"count":2,"min_index":8,"rank":1,"word_shingle":"companies face bills intervention as ministers"},{"count":2,"min_index":8,"rank":2,"word_shingle":"latest water companies face bills intervention"},{"count":2,"min_index":8,"rank":3,"word_shingle":"politics latest water companies face bills"},{"count":2,"min_index":8,"rank":4,"word_shingle":"water companies face bills intervention as"},{"count":2,"min_index":8,"rank":5,"word_shingle":"companies face bills intervention as"},{"count":2,"min_index":8,"rank":6,"word_shingle":"face bills intervention as ministers"},{"count":2,"min_index":8,"rank":7,"word_shingle":"latest water companies face bills"},{"count":2,"min_index":8,"rank":8,"word_shingle":"politics latest water companies face"},{"count":2,"min_index":8,"rank":9,"word_shingle":"water companies face bills intervention"}]}',
+    method: "POST",
+  },
+).then((res) => res.json());
+
+console.log(data);
