@@ -1,4 +1,4 @@
-## Goals v1.1:
+## Tickets v1.0:
 
 --backend
 [x] better harness, make it smarter and more accurate
@@ -6,11 +6,14 @@
 
 --frontend
 
+[x] widgets
+[x] system sound
+
 [x] tool output dynamic ui
 [x] improved intent inference using prepare step
 [x] trace v2.0
 
-[ ] retain under-page interactivity ...
+[x] retain under-page interactivity
 
 [x] dynamic thread
 

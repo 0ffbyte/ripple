@@ -83,7 +83,7 @@ function AssistantMessage({
       transition={{ duration: 0.2 }}
       className="w-full p-3 flex flex-col gap-2"
     >
-      <Trace parts={message.parts} hasResponse={hasResponse} />
+      <Trace parts={message.parts} hasResponse={hasResponse} status={status} />
       {message.parts.map((part, idx) => {
         switch (part.type) {
           case "text":

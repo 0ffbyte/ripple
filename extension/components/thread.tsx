@@ -34,6 +34,19 @@ export default function Thread({
       )}
       initial={{ opacity: 0, y: -128, scaleY: 0.2, filter: "blur(12px)" }}
       animate={{ opacity: 1, y: 0, scaleY: 1, filter: "blur(0px)" }}
+      transition={{
+        type: "spring",
+        stiffness: 240,
+        damping: 24,
+        filter: {
+          duration: 0.6,
+        },
+        width: {
+          type: "spring",
+          stiffness: 300,
+          damping: 16,
+        },
+      }}
     >
       {collapsed ? (
         <motion.p

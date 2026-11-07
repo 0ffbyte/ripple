@@ -7,6 +7,7 @@ export default defineConfig({
     plugins: [tailwindcss()],
   }),
   manifest: {
+    name: "Ripple",
     version: "1.0.0",
     permissions: ["storage", "bookmarks", "history", "activeTab"],
     commands: {

@@ -1,4 +1,5 @@
 import {
+  hasToolCall,
   isStepCount,
   pruneMessages,
   ToolLoopAgent,
@@ -8,7 +9,7 @@ import { model } from "../model";
 import { toolRegistry } from "./tools";
 import buildSystemPrompt from "./system";
 import classify from "@/lib/classify-intent";
-import { loadSkill, loadSkills } from "../skills/registry";
+import { loadSkills } from "../skills/registry";
 
 const COMPACT_AFTER_TOKENS = 1200;
 
@@ -39,7 +40,7 @@ function getLastUserMessage(settings: any, depth: number = 1): string {
 const Agent = new ToolLoopAgent({
   model,
   tools: toolRegistry,
-  stopWhen: isStepCount(5),
+  stopWhen: [isStepCount(6), hasToolCall("get_time")],
   prepareCall: async ({ ...settings }) => {
     const instructions = await buildSystemPrompt();
     return {

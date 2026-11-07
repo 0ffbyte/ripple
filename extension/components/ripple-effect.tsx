@@ -20,11 +20,11 @@ type Props = {
 const DEFAULT_IMG = "https://picsum.photos/seed/5100/1920/1080";
 
 // Tuning knobs
-const THICKNESS = 0.12;
-const STRENGTH = 0.16;
+const THICKNESS = 0.08;
+const STRENGTH = 0.24;
 const ABERRATION = 0.08;
 const GLOW = 0.08;
-const BLUR = 0.02;
+const BLUR = 0.01;
 const DELAY = 0.4;
 const LEAD = 0; // how far the rainbow wave runs ahead, in radius units
 const RAINBOW = 0.04; // rainbow intensity (keep subtle)

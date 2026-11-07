@@ -33,8 +33,8 @@ export default function Surface({
       }}
       transition={{
         type: "spring",
-        stiffness: 200,
-        damping: 20,
+        stiffness: 240,
+        damping: 16,
         filter: {
           duration: 0.6,
         },

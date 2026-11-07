@@ -21,6 +21,8 @@ const screenshotTab = async () => {
 
 export default defineContentScript({
   matches: ["*://*/*"],
+  matchAboutBlank: true,
+  matchOriginAsFallback: true,
   cssInjectionMode: "ui",
   async main(ctx) {
     let bitmap: ImageBitmap | null = null;

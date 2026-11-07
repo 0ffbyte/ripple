@@ -3,8 +3,14 @@ import { motion } from "motion/react";
 import { cn } from "cn";
 import Markdown from "./markdown";
 import { groupByTurn } from "@/lib/ui";
-import { isTextUIPart, type ChatStatus, type UIMessage } from "ai";
+import {
+  isTextUIPart,
+  isToolUIPart,
+  type ChatStatus,
+  type UIMessage,
+} from "ai";
 import Trace from "./trace";
+import ToolWidget from "./tool-widget";
 
 function Messages({
   messages,
@@ -47,12 +53,7 @@ function Messages({
 
               if (m.role === "assistant")
                 return (
-                  <AssistantMessage
-                    key={m.id}
-                    message={m}
-                    status={status}
-                    isLastTurn={isLastTurn}
-                  />
+                  <AssistantMessage key={m.id} message={m} status={status} />
                 );
             })}
 
@@ -66,34 +67,38 @@ function Messages({
 
 function AssistantMessage({
   message,
+  status,
 }: {
   message: UIMessage;
   status: ChatStatus;
-  isLastTurn: boolean;
 }) {
   const hasResponse = message.parts.some(
-    (part) => isTextUIPart(part) && part.text.length > 0,
+    (part) =>
+      (isTextUIPart(part) && part.text.length > 0) || status !== "streaming",
   );
 
   return (
     <article key={message.id} className="w-full p-3 flex flex-col gap-2">
       <Trace parts={message.parts} hasResponse={hasResponse} />
       {message.parts.map((part, idx) => {
-        switch (part.type) {
-          case "text":
-            return (
-              <motion.div
-                key={idx}
-                initial={{ opacity: 0, filter: "blur(4px)", y: 12 }}
-                animate={{ opacity: 1, filter: "blur(0px)", y: 0 }}
-              >
-                <Markdown
-                  id={message.id}
-                  value={part.text}
-                  streaming={part.state === "streaming"}
-                />
-              </motion.div>
-            );
+        if (isTextUIPart(part)) {
+          return (
+            <motion.div
+              key={idx}
+              initial={{ opacity: 0, filter: "blur(4px)", y: 12 }}
+              animate={{ opacity: 1, filter: "blur(0px)", y: 0 }}
+            >
+              <Markdown
+                id={message.id}
+                value={part.text}
+                streaming={part.state === "streaming"}
+              />
+            </motion.div>
+          );
+        }
+
+        if (isToolUIPart(part)) {
+          return <ToolWidget key={part.toolCallId} part={part} />;
         }
       })}
     </article>
@@ -130,6 +135,7 @@ const RIPPLE_VERBS = [
   "Welling",
   "Sounding",
 ];
+
 function Loader() {
   return (
     <motion.p

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import Markdown from "./markdown";
 import {
+  ChatStatus,
   isReasoningUIPart,
   isToolUIPart,
   type ReasoningUIPart,
@@ -28,9 +29,11 @@ const getToolLabel = (name: string, input: any, status: ToolStatus) => {
 
 export default function Trace({
   parts,
+  status,
   hasResponse,
 }: {
   parts: UIMessage["parts"];
+  status: ChatStatus;
   hasResponse: boolean;
 }) {
   const traceParts = parts.filter(

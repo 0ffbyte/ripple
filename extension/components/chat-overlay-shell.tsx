@@ -5,6 +5,7 @@ import { motion, useMotionValue, useSpring } from "motion/react";
 import Thread from "./thread";
 import Surface from "./surface";
 import Composer from "./chat/composer";
+import { unlockAudio } from "@/lib/audio";
 
 export default function ChatOverlayShell() {
   const { messages, sendMessage, status, stop, error, regenerate } = useChat({
@@ -42,6 +43,7 @@ export default function ChatOverlayShell() {
     <motion.div
       className="grid w-135 grid-rows-[minmax(0,1fr)_auto] justify-items-center gap-3 pointer-events-auto"
       style={{ height }}
+      onPointerDownCapture={unlockAudio}
     >
       <Thread
         messages={messages}
@@ -54,7 +56,7 @@ export default function ChatOverlayShell() {
         }}
         onResize={(deltaY) => {
           virtual.set(virtual.get() - deltaY);
-          if (virtual.get() <= MIN - 240) {
+          if (virtual.get() <= MIN - 300) {
             virtual.set(MIN);
             height.set(MIN);
             setThreadCollapsed(true);

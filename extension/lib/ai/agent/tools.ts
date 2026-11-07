@@ -199,5 +199,7 @@ export const toolRegistry = {
   search_bookmarks: searchBookmarks,
 };
 
+export type ToolName = keyof typeof toolRegistry;
+
 export type WebSearchTool = InferUITool<typeof webSearch>;
 export type ReadTabTool = InferUITool<typeof readTab>;

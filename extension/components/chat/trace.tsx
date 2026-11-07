@@ -10,6 +10,7 @@ import {
 } from "ai";
 import { cn } from "cn";
 import type { ReadTabTool, WebSearchTool } from "@/lib/ai/agent/tools";
+import { playTraceCue } from "@/lib/audio";
 
 const getTraceLabel = (isActive: boolean, seconds: number) => {
   if (isActive) return "Rippling";
@@ -30,10 +31,25 @@ export default function Trace({
   const isActive =
     traceParts.some((part) => "state" in part && part.state === "streaming") ||
     !hasResponse;
+
   const [open, setOpen] = useState(isActive);
 
   const elapsed = useRef(0);
+  const wasActive = useRef<boolean | null>(null);
   const [seconds, setSeconds] = useState(0);
+
+  useEffect(() => {
+    if (wasActive.current === null) {
+      wasActive.current = isActive;
+      if (isActive) playTraceCue("start");
+      return;
+    }
+
+    if (wasActive.current !== isActive) {
+      playTraceCue(isActive ? "start" : "end");
+      wasActive.current = isActive;
+    }
+  }, [isActive]);
 
   useEffect(() => {
     if (!isActive) {
