@@ -1,7 +1,7 @@
 import { transformersJS } from "@browser-ai/transformers-js";
 import { extractReasoningMiddleware, wrapLanguageModel } from "ai";
 
-const BASE_MODEL = "onnx-community/gemma-4-E2B-it-ONNX";
+const MODEL_ID = "onnx-community/gemma-4-E2B-it-ONNX";
 
 export type State = {
   phase: "idle" | "loading" | "ready" | "error";
@@ -9,13 +9,14 @@ export type State = {
   error?: string;
 };
 
-const baseModel = transformersJS(BASE_MODEL, {
+export const classifierModel = transformersJS(MODEL_ID, {
   device: "webgpu",
   dtype: "q4f16",
+  isVisionModel: true,
 });
 
 export const model = wrapLanguageModel({
-  model: baseModel,
+  model: classifierModel,
   middleware: extractReasoningMiddleware({
     tagName: { opening: "<think>thought\n", closing: "</think>" },
   }),
@@ -41,11 +42,11 @@ let lastPct = -1;
 
 export function load() {
   loading ??= (async () => {
-    if ((await baseModel.availability()) === "unavailable") {
+    if ((await classifierModel.availability()) === "unavailable") {
       throw new Error("This browser does not support WebGPU inference.");
     }
     setState({ phase: "loading", progress: 0 });
-    await baseModel.createSessionWithProgress((p: any) => {
+    await classifierModel.createSessionWithProgress((p: any) => {
       const pct = Math.round(
         (typeof p === "number" ? p : (p?.progress ?? 0)) * 100,
       );

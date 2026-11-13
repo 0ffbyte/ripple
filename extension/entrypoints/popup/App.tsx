@@ -31,8 +31,9 @@ export function useModelStatus() {
 export default function Popup() {
   const { progress, phase } = useModelStatus();
   return (
-    <div className="w-60 h-60 bg-blue-500 rounded-md">
+    <div className="w-80 h-60 font-sans text-md text-zinc-50">
       <p>{progress}</p>
+      <p>{phase}</p>
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import type { ChatTransport, UIMessageChunk } from "ai";
-import type { MyUIMessage } from "./agent/types";
+import type { RippleUIMessage } from "./agent/types";
 
-export const portTransport: ChatTransport<MyUIMessage> = {
+export const portTransport: ChatTransport<RippleUIMessage> = {
   async sendMessages({ messages, abortSignal }) {
     const port = browser.runtime.connect({ name: "chat" });
     abortSignal?.addEventListener("abort", () => port.disconnect());

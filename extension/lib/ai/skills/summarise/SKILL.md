@@ -9,48 +9,44 @@ description: Summarise a webpage into clean, scannable markdown. Use when the us
 
 # {Page title}
 
-> {One sentence: what this page is and why it matters.}
+> {Takeaway: the conclusion or recommended action, one sentence.}
 
-**Source:** {domain} · **Type:** {article, docs, product, thread, etc.} · **Saves:** ~{N} min
+**Source:** {domain} · **Type:** {article, docs, product, thread, etc.} · **Read time saved:** ~{N} min
 
 ## Key Points
 
-- {3 to 5 bullets, one idea each, under 20 words, most important first}
+1. {3 to 5 items, one idea each, under 20 words, most important first}
 
 ## Details
 
-**{Heading mirroring the page's structure}**
-{1 to 2 sentences.}
+1. **{Heading mirroring the page's structure}:** {One sentence.}
 
 ## Notable
 
-- {Numbers, dates, names, or one short quote (under 15 words)}
-
-## Takeaway
-
-{The conclusion or recommended action, in one sentence.}
+1. {Numbers, dates, names, or one short quote (under 15 words)}
 
 ## Rules
 
 **Content**
 
-- Use only what the page says. No outside facts, opinions, or inference.
-- Paraphrase. Never copy passages.
-- Lead with the point. No filler like "this article discusses".
+1. Use only what the page says. No outside facts, opinions, or inference.
+2. Paraphrase. Never copy passages.
+3. Lead with the point. No filler like "this article discusses".
+4. If the page conflicts with itself, report both claims, attributed.
 
 **Length**
 
-- 150 to 300 words by default. Under 100 words for short pages. Follow the user's length if given.
-- Omit any section with nothing useful in it. Details and Notable are the first to go.
+1. Default 150 to 250 words. Under 100 for short pages. Follow the user's length if given.
+2. Omit any section with nothing useful in it. Details and Notable go first.
 
 **Format**
 
-- Standard markdown only: headings, bullets, bold, blockquote.
-- Match the page's language unless told otherwise.
-- Bold sparingly, for labels only.
+1. Standard markdown only: headings, numbered lists, bold, blockquote.
+2. Use numbered lists everywhere. No bullets.
+3. Match the page's language unless told otherwise.
+4. Bold for labels only.
 
 **Edge cases**
 
-- Paywalled, blocked, or empty page: say so in one line and summarise only what is visible.
-- Page is mostly navigation or listings: describe its purpose and structure instead of forcing key points.
-- Conflicting claims on the page: report both, attributed.
+1. Paywalled, blocked, or empty page: say so in one line, then summarise only what is visible.
+2. Mostly navigation or listings: describe purpose and structure instead of forcing key points.

@@ -4,13 +4,17 @@ import Markdown from "./markdown";
 import {
   isReasoningUIPart,
   isToolUIPart,
+  type ChatStatus,
   type ReasoningUIPart,
   type ToolUIPart,
   type UIMessage,
 } from "ai";
 import { cn } from "cn";
-import type { ReadTabTool, WebSearchTool } from "@/lib/ai/agent/tools";
+import type { ReadTabTool, SearchWebTool } from "@/lib/ai/agent/tools";
 import { playTraceCue } from "@/lib/audio";
+import { getThoughtLabel } from "@/lib/verbs";
+import type { Intent } from "@/lib/ai/agent/classifier";
+import getRippleVerb from "@/lib/verbs";
 
 const getTraceLabel = (isActive: boolean, seconds: number) => {
   if (isActive) return "Rippling";
@@ -18,12 +22,30 @@ const getTraceLabel = (isActive: boolean, seconds: number) => {
   return `Done`;
 };
 
+function TraceLoader() {
+  const rippleVerb = useMemo(() => getRippleVerb(), []);
+  return (
+    <motion.p
+      key="trace-loader"
+      initial={{ opacity: 0, filter: "blur(4px)", y: 12 }}
+      animate={{ opacity: 1, filter: "blur(0px)", y: 0 }}
+      transition={{ duration: 0.2 }}
+      className=" text-zinc-50/90 animate-pulse"
+    >
+      {rippleVerb}
+    </motion.p>
+  );
+}
 export default function Trace({
   parts,
   hasResponse,
+  status,
+  intent,
 }: {
   parts: UIMessage["parts"];
   hasResponse: boolean;
+  status: ChatStatus;
+  intent?: Intent | null;
 }) {
   const traceParts = parts.filter(
     (p) => isReasoningUIPart(p) || isToolUIPart(p),
@@ -74,7 +96,7 @@ export default function Trace({
     };
   }, [isActive]);
 
-  if (parts.length === 0) return null;
+  if (status === "submitted") return <TraceLoader />;
 
   return (
     <motion.div
@@ -101,7 +123,7 @@ export default function Trace({
         <motion.ol className="flex flex-col gap-2">
           {traceParts.map((part, idx) => {
             if (part.type === "reasoning")
-              return <ReasoningStep key={idx} part={part} />;
+              return <ReasoningStep key={idx} part={part} intent={intent} />;
             else return <ToolStep key={idx} part={part as ToolUIPart} />;
           })}
         </motion.ol>
@@ -110,15 +132,39 @@ export default function Trace({
   );
 }
 
-const ReasoningStep = ({ part }: { part: ReasoningUIPart }) => {
+const ReasoningStep = ({
+  part,
+  intent,
+}: {
+  part: ReasoningUIPart;
+  intent?: Intent | null;
+}) => {
   const isActive = part.state === "streaming";
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (isActive && ref.current) {
+      ref.current.scrollTo({
+        top: ref.current.scrollHeight,
+        behavior: "smooth",
+      });
+    }
+  }, [part.text, isActive]);
+
+  const label = useMemo(() => getThoughtLabel(intent), [intent]);
+  if (!isActive && label == null) return null;
 
   return (
     <li className="text-zinc-50/60 whitespace-pre-wrap leading-relaxed">
       {isActive ? (
-        <Markdown value={part.text} streaming={isActive} />
+        <div
+          ref={ref}
+          className="max-h-32 overflow-hidden mask-[linear-gradient(to_bottom,transparent,black_10%)]"
+        >
+          <Markdown value={part.text} streaming={isActive} />
+        </div>
       ) : (
-        <p>Thought briefly</p>
+        <p>{label}</p>
       )}
     </li>
   );
@@ -143,8 +189,8 @@ const ToolStep = ({ part }: { part: ToolUIPart }) => {
   const isLive = status === "pending" || status === "running";
 
   switch (name) {
-    case "web_search": {
-      const query = (part.input as Partial<WebSearchTool["input"]> | undefined)
+    case "search_web": {
+      const query = (part.input as Partial<SearchWebTool["input"]> | undefined)
         ?.query;
 
       const verb =
@@ -167,9 +213,47 @@ const ToolStep = ({ part }: { part: ToolUIPart }) => {
       );
     }
 
+    case "view_tab": {
+      const verb =
+        status === "done"
+          ? "Viewed"
+          : status === "error"
+            ? "Failed viewing"
+            : "Viewing";
+
+      return (
+        <p className={cn("text-zinc-50/60", isLive && "animate-pulse")}>
+          {verb} the tab
+        </p>
+      );
+    }
+
+    case "list_tabs": {
+      const count = (part.output as { tabs?: unknown[] } | undefined)?.tabs
+        ?.length;
+      const verb =
+        status === "done"
+          ? "Listed"
+          : status === "error"
+            ? "Failed listing"
+            : "Listing";
+
+      return (
+        <p className={cn("text-zinc-50/60", isLive && "animate-pulse")}>
+          {verb}{" "}
+          {count != null ? (
+            <span className="text-zinc-50/90">{count} tabs</span>
+          ) : (
+            "open tabs"
+          )}
+        </p>
+      );
+    }
+
     case "read_tab": {
-      const tabTitle = (part.input as Partial<ReadTabTool["input"]> | undefined)
-        ?.tabTitle;
+      const tabTitle = (
+        part.output as Partial<ReadTabTool["output"]> | undefined
+      )?.title;
 
       const verb =
         status === "done"

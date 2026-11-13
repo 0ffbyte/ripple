@@ -1,12 +1,12 @@
 import { type UIMessage } from "ai";
 import { z } from "zod";
+import { INTENTS } from "./classifier";
 
-// Define your metadata schema
 export const messageMetadataSchema = z.object({
-  totalTokens: z.number().optional(),
+  intent: z.enum(INTENTS).nullable().optional(),
 });
 
 export type MessageMetadata = z.infer<typeof messageMetadataSchema>;
 
 // Create a typed UIMessage
-export type MyUIMessage = UIMessage<MessageMetadata>;
+export type RippleUIMessage = UIMessage<MessageMetadata>;

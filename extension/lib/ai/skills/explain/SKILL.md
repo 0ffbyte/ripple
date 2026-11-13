@@ -1,5 +1,5 @@
 ---
-name: explain-complex-topics
+name: explain
 description: Explain complex, technical, or abstract topics clearly at the right level. Use whenever the user asks to explain, break down, demystify, or teach something difficult, or says "ELI5", "walk me through", "how does X actually work", or "help me understand", even if they never say "explain".
 ---
 

@@ -1,8 +1,9 @@
-import { tool, type InferToolOutput, type InferUITool } from "ai";
+import { tool, type InferUITool } from "ai";
 import { z } from "zod";
 import {
   addTabToAgentGroup,
   extractTabContent,
+  resolveTab,
   waitForTab,
 } from "@/lib/browser";
 
@@ -12,65 +13,80 @@ const clamp = (n: number, min: number, max: number) =>
   Math.min(max, Math.max(min, n));
 
 /* -------------------------------------------------------------------------- */
-/*  get_time                                                                  */
-/* -------------------------------------------------------------------------- */
-
-const getTime = tool({
-  deferLoading: DEFERRED,
-  description:
-    "Get the current date and time. Use this whenever the user asks what time or date it is, in any city or timezone.",
-  inputSchema: z.object({}),
-  execute: async ({}) => {
-    return {
-      time: new Date(),
-    };
-  },
-});
-
-/* -------------------------------------------------------------------------- */
 /*  Page content                                                              */
 /* -------------------------------------------------------------------------- */
 
 const readTab = tool({
   deferLoading: DEFERRED,
-  description:
-    "Read a tab's text content. Pass the tab id a title to read a specific tab. Use the active tab by default.",
+  description: "Read a tab's text. Use active tab as default.",
   inputSchema: z.object({
-    tabId: z.number().int().describe("Tab id."),
-    tabTitle: z.string().describe("Tab title."),
+    tabId: z
+      .number()
+      .int()
+      .optional()
+      .describe("Tab id. Defaults to the active tab."),
   }),
-  execute: async ({ tabId }) => {
+  async *execute({ tabId }) {
     try {
-      const content = await extractTabContent(tabId);
+      const tab = await resolveTab(tabId);
+      if (!tab) return { error: "No tab found." };
 
-      return {
-        tabId,
+      yield { title: tab.title };
+
+      const content = await extractTabContent(tab.tabId);
+
+      yield {
+        tabId: tab.tabId,
         title: content.title,
         url: content.url,
         text: content.text,
       };
-    } catch (e: any) {
-      console.error("readTab failed:", e);
-      return { error: "Cannot read this page (restricted or not loaded)." };
+
+      return;
+    } catch (error) {
+      console.error("readTab failed:", error);
+      return {
+        error:
+          error instanceof Error
+            ? error.message
+            : "Cannot read this page (restricted or not loaded).",
+      };
     }
   },
 });
 
-const screenshotPage = tool({
-  description: "Capture the visible area of the active tab",
+const listTabs = tool({
+  deferLoading: DEFERRED,
+  description:
+    "List all open tabs. Use when the user refers to a tab by name or wants a comparison across tabs.",
   inputSchema: z.object({}),
   execute: async () => {
-    const dataUrl = await browser.tabs.captureVisibleTab({
-      format: "jpeg",
-      quality: 12,
-    });
-
-    // Extract the raw base64 string after the data URI prefix
-    return dataUrl;
+    const tabs = await browser.tabs.query({});
+    const summaries = await Promise.all(
+      tabs.map(async (t) => {
+        const content = await extractTabContent(t.id as number, 1000);
+        return content.text;
+      }),
+    );
+    return {
+      tabs: tabs
+        .filter((t) => t.id !== undefined)
+        .map((t, index) => ({
+          tabId: t.id as number,
+          title: t.title ?? "",
+          summary: summaries[index] ?? "",
+          active: t.active ?? false,
+          pinned: t.pinned ?? false,
+        })),
+    };
   },
 });
 
-const webSearch = tool({
+/* -------------------------------------------------------------------------- */
+/*  History, bookmarks and search                                                   */
+/* -------------------------------------------------------------------------- */
+
+const searchWeb = tool({
   deferLoading: DEFERRED,
   description:
     "Search Google using a query. Returns the search results title, URL, and text.",
@@ -122,10 +138,6 @@ const webSearch = tool({
     }
   },
 });
-
-/* -------------------------------------------------------------------------- */
-/*  History and bookmarks                                                     */
-/* -------------------------------------------------------------------------- */
 
 const searchHistory = tool({
   deferLoading: DEFERRED,
@@ -191,15 +203,14 @@ const searchBookmarks = tool({
 /* -------------------------------------------------------------------------- */
 
 export const toolRegistry = {
-  get_time: getTime,
-  web_search: webSearch,
   read_tab: readTab,
-  screenshot_page: screenshotPage,
+  list_tabs: listTabs,
+  search_web: searchWeb,
   search_history: searchHistory,
   search_bookmarks: searchBookmarks,
 };
 
 export type ToolName = keyof typeof toolRegistry;
 
-export type WebSearchTool = InferUITool<typeof webSearch>;
+export type SearchWebTool = InferUITool<typeof searchWeb>;
 export type ReadTabTool = InferUITool<typeof readTab>;

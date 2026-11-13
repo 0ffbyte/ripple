@@ -1,10 +1,11 @@
 ## Tickets v1.0:
 
---backend
-[x] better harness, make it smarter and more accurate
-[x] tackle search
+[ ] prepare for launch ripple.artntek.co ...
 
---frontend
+[ ] finish popup control center ...
+[ ] introduce voice input ...
+
+[x] introduce vision
 
 [x] widgets
 [x] system sound
@@ -23,3 +24,11 @@
 [x] chat-overlay basic chat
 
 ## Scribbles:
+
+we're in deep shit, but i think i have a plan:
+
+- focus on launching one product per month, starting with ripple v1.
+- build the marketing page for it, published on main domain \_.artntek.co
+- release it and share progress with the public
+- await new work offers
+- repeat

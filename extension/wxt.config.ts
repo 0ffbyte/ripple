@@ -9,7 +9,14 @@ export default defineConfig({
   manifest: {
     name: "Ripple",
     version: "1.0.0",
-    permissions: ["storage", "bookmarks", "history", "activeTab"],
+    permissions: [
+      "storage",
+      "bookmarks",
+      "history",
+      "activeTab",
+      "scripting",
+      "tabs",
+    ],
     commands: {
       "toggle-chat": {
         suggested_key: {
@@ -20,5 +27,9 @@ export default defineConfig({
       },
     },
     host_permissions: ["<all_urls>"],
+    content_security_policy: {
+      extension_pages:
+        "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';",
+    },
   },
 });

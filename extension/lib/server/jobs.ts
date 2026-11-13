@@ -1,21 +1,21 @@
+import { screenshotTab } from "../browser";
+
 type JobContext = {
   msg: { type: string; [key: string]: unknown };
   sender: Browser.runtime.MessageSender;
   sendResponse: (response: unknown) => void;
 };
 
-function captureImage({ sender, sendResponse }: JobContext) {
-  browser.tabs
-    .captureVisibleTab(sender.tab?.windowId ?? 0, {
-      format: "jpeg",
-      quality: 30,
-    })
-    .then((dataUrl) => sendResponse({ dataUrl }))
-    .catch((error: unknown) =>
-      sendResponse({
-        error: error instanceof Error ? error.message : String(error),
-      }),
-    );
+async function captureImage({ sender, sendResponse }: JobContext) {
+  try {
+    const tabId = sender.tab?.id ?? 0;
+    const dataUrl = await screenshotTab(tabId, 80);
+    sendResponse({ dataUrl });
+  } catch (error: unknown) {
+    sendResponse({
+      error: error instanceof Error ? error.message : String(error),
+    });
+  }
 }
 
 export default function registerJobs() {

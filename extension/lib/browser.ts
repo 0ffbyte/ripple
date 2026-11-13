@@ -1,10 +1,17 @@
-export async function resolveTabId(tabId?: number): Promise<number | null> {
-  if (tabId !== undefined) return tabId;
+export async function resolveTab(
+  tabId?: number,
+): Promise<{ tabId: number; title: string } | null> {
+  if (tabId !== undefined) {
+    const tab = await browser.tabs.get(tabId).catch(() => undefined);
+    if (tab?.id === undefined) return null;
+    return { tabId: tab.id, title: tab.title ?? "" };
+  }
   const [active] = await browser.tabs.query({
     active: true,
     lastFocusedWindow: true,
   });
-  return active?.id ?? null;
+  if (active?.id === undefined) return null;
+  return { tabId: active.id, title: active.title ?? "" };
 }
 
 const AGENT_GROUP_TITLE = "Ripple";
@@ -103,8 +110,7 @@ export async function waitForTab(
 // Extractor v1.0
 export async function extractTabContent(
   tabId: number,
-  maxLength: number = 3000,
-  maxImages: number = 5,
+  maxLength: number = 4500,
 ): Promise<TabContent> {
   const [res] = await browser.scripting.executeScript({
     target: { tabId },
@@ -246,4 +252,30 @@ export async function extractTabContent(
   }
 
   throw new Error("Failed to extract tab content.");
+}
+
+// Capture the visible tab. Call this before the chat overlay mounts.
+const tabShots = new Map<number, string>();
+export async function screenshotTab(
+  tabId: number,
+  quality: number = 30,
+): Promise<string> {
+  const tab = await browser.tabs.get(tabId);
+  if (!tab) throw new Error("No tab found");
+  const { windowId } = tab;
+
+  const dataUrl = await browser.tabs.captureVisibleTab(windowId, {
+    format: "jpeg",
+    quality,
+  });
+
+  if (!dataUrl) throw new Error("Screenshot capture returned no image data");
+  tabShots.set(tabId, dataUrl);
+  return dataUrl;
+}
+
+export function toImageBitmap(dataUrl: string): Promise<ImageBitmap> {
+  const bin = atob(dataUrl.split(",")[1] ?? "");
+  const bytes = Uint8Array.from(bin, (c) => c.charCodeAt(0));
+  return createImageBitmap(new Blob([bytes], { type: "image/jpeg" }));
 }

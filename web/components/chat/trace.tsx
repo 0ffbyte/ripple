@@ -29,7 +29,6 @@ const getToolLabel = (name: string, input: any, status: ToolStatus) => {
 
 export default function Trace({
   parts,
-  status,
   hasResponse,
 }: {
   parts: UIMessage["parts"];

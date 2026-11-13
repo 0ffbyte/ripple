@@ -1,6 +1,7 @@
 import { motion } from "motion/react";
 import Messages from "./chat/messages";
-import type { ChatStatus, UIMessage } from "ai";
+import type { ChatStatus } from "ai";
+import type { RippleUIMessage } from "@/lib/ai/agent/types";
 import Surface from "./surface";
 import { cn } from "cn";
 
@@ -13,7 +14,7 @@ export default function Thread({
   onResize,
   onResizeEnd,
 }: {
-  messages: UIMessage[];
+  messages: RippleUIMessage[];
   status: ChatStatus;
   collapsed: boolean;
   onCollapsedChange: (collapsed: boolean) => void;

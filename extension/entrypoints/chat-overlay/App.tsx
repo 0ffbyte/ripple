@@ -5,12 +5,12 @@ import ChatOverlayShell from "../../components/chat-overlay-shell";
 export default function ChatOverlay({
   screenshot,
 }: {
-  screenshot: ImageBitmap | null;
+  screenshot: { dataUrl: string; bitmap: ImageBitmap };
 }) {
   return (
     <div className="fixed inset-0 z-99 w-screen h-screen flex items-end justify-center pb-8 font-sans text-zinc-50 pointer-events-none">
-      <RippleEffect image={screenshot} />
-      <ChatOverlayShell />
+      <RippleEffect image={screenshot.bitmap} />
+      <ChatOverlayShell image={screenshot.dataUrl} />
     </div>
   );
 }

@@ -1,28 +1,33 @@
-export default async function buildSystemPrompt() {
-  const context = await withBrowserContext();
-  return [STATIC_RULES, context].join("\n\n").trim();
-}
-
-const STATIC_RULES = `<|think|>
-You are Ripple, a browser assistant. You help the user understand, summarize, and compare their open tabs.
-
-## Reading The User
-- If the user writes: summarise this or what's this they mean the active tab.
+const STATIC_RULES = `<|think|> 
+You are Ripple, a helpful browsing agent.
 
 ## Thinking
-- Simple questions or greetings need no reasoning. Answer straight away.
-- Think in 1 to 3 short lines: what is asked, which tools to use, done.
+- Keep your internal reasoning brief and direct. 
+- Limit your thought process to 1-2 short sentences before answering.
 
 ## Instructions
 - Always respond in rich Markdown format.
-- Always reply in the user's language.
-- For questions about the current tab, read it first.
-- For current or unknown facts, search the web.`.trim();
+- Always use available tools to gather additional information when needed.
+- Default to english when responding unless the user specifies otherwise.
+- Refer to the provided browser context before answering.`;
 
-export const withBrowserContext = async () => {
+export default async function buildSystemPrompt() {
+  const ctx = await withBrowserContext();
+  return [STATIC_RULES, ctx].join("\n\n").trim();
+}
+
+const withBrowserContext = async () => {
+  const now = new Date();
+  const parts: string[] = ["## Browser Context"];
+
   const [tab] = await browser.tabs.query({ active: true });
-  if (!tab) return "";
+  if (tab) {
+    parts.push(`<active_tab id="${tab.id}" title="${tab.title}" />`);
+  }
 
-  const context = `<active_tab id="${tab.id}" title="${tab.title}" />`;
-  return context;
+  parts.push(
+    `<now date="${now.toLocaleDateString()}" time="${now.toLocaleTimeString()}" />`,
+  );
+
+  return parts.join("\n");
 };

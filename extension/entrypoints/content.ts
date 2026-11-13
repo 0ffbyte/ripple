@@ -1,23 +1,8 @@
+import "../assets/tailwind.css";
 import { createRoot } from "react-dom/client";
 import { createElement } from "react";
 import ChatOverlay from "./chat-overlay/App";
-import "../assets/tailwind.css";
-
-const screenshotTab = async () => {
-  const { dataUrl, error } = await browser.runtime.sendMessage({
-    type: "CAPTURE",
-  });
-  if (error) throw new Error(error);
-  if (!dataUrl) throw new Error("Screenshot capture returned no image data");
-
-  const bin = atob(dataUrl.split(",")[1]);
-  const bytes = Uint8Array.from(bin, (c) => c.charCodeAt(0));
-  const bitmap = await createImageBitmap(
-    new Blob([bytes], { type: "image/jpeg" }),
-  );
-
-  return bitmap;
-};
+import { toImageBitmap } from "@/lib/browser";
 
 export default defineContentScript({
   matches: ["*://*/*"],
@@ -25,13 +10,14 @@ export default defineContentScript({
   matchOriginAsFallback: true,
   cssInjectionMode: "ui",
   async main(ctx) {
-    let bitmap: ImageBitmap | null = null;
+    let screenshot: any;
+
     const UI = await createShadowRootUi(ctx, {
       name: "chat-overlay",
       position: "modal",
       anchor: "body",
-      zIndex: 9999999,
-      onMount: (container, shadow, shadowHost) => {
+      zIndex: 99999,
+      onMount: (container, _, shadowHost) => {
         shadowHost.setAttribute("popover", "manual");
         shadowHost.showPopover();
         container.style.pointerEvents = "none";
@@ -41,7 +27,11 @@ export default defineContentScript({
 
         const root = createRoot(app);
 
-        root.render(createElement(ChatOverlay, { screenshot: bitmap }));
+        root.render(
+          createElement(ChatOverlay, {
+            screenshot,
+          }),
+        );
         return root;
       },
       onRemove: (root) => {
@@ -57,12 +47,15 @@ export default defineContentScript({
           toggleChatUI();
           return;
         }
-
         try {
-          bitmap = await screenshotTab();
+          const { dataUrl } = await browser.runtime.sendMessage({
+            type: "CAPTURE",
+          });
+
+          screenshot = { dataUrl, bitmap: await toImageBitmap(dataUrl) };
         } catch (error) {
           console.warn("Could not capture tab for chat overlay:", error);
-          bitmap = null;
+          screenshot = null;
         }
         toggleChatUI();
       }

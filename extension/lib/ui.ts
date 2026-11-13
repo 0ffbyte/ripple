@@ -1,9 +1,9 @@
-import type { UIMessage } from "ai";
+import type { RippleUIMessage } from "@/lib/ai/agent/types";
 
 // Group messages by turn
-type Turn = { id: string; messages: UIMessage[] };
+type Turn = { id: string; messages: RippleUIMessage[] };
 
-export const groupByTurn = (messages: UIMessage[]): Turn[] => {
+export const groupByTurn = (messages: RippleUIMessage[]): Turn[] => {
   const turns: Turn[] = [];
 
   for (const message of messages) {

@@ -21,13 +21,13 @@ const DEFAULT_IMG = "https://picsum.photos/seed/5100/1920/1080";
 
 // Tuning knobs
 const THICKNESS = 0.08;
-const STRENGTH = 0.24;
-const ABERRATION = 0.08;
-const GLOW = 0.08;
+const STRENGTH = 0.44;
+const ABERRATION = 0.04;
+const GLOW = 0.12;
 const BLUR = 0.01;
 const DELAY = 0.4;
 const LEAD = 0; // how far the rainbow wave runs ahead, in radius units
-const RAINBOW = 0.04; // rainbow intensity (keep subtle)
+const RAINBOW = 0.01; // rainbow intensity (keep subtle)
 
 const shockwave = wgslFn(/* wgsl */ `
   fn shockwave(
@@ -150,7 +150,7 @@ const shockwave = wgslFn(/* wgsl */ `
 
 export default function RippleEffect({
   image = DEFAULT_IMG,
-  duration = 1600,
+  duration = 1400,
   autoplay = true,
   fadeOut = true,
   onDone,

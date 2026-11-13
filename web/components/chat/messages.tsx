@@ -66,6 +66,7 @@ function Messages({
 
 function AssistantMessage({
   message,
+  status,
 }: {
   message: UIMessage;
   status: ChatStatus;

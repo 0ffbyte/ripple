@@ -10,7 +10,7 @@ type WidgetProps = {
 };
 
 const widgets: Partial<Record<ToolName, ComponentType<WidgetProps>>> = {
-  get_time: TimeWidget,
+  //get_weather: WeatherWidget,
 };
 
 function hasWidget(name: string): name is ToolName {
@@ -35,7 +35,7 @@ export default function ToolWidget({ part }: WidgetProps) {
   ) : null;
 }
 
-function TimeWidget({ part }: WidgetProps) {
+function WeatherWidget({ part }: WidgetProps) {
   return (
     <div className="w-full flex flex-col gap-2">
       <Markdown

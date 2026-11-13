@@ -1,18 +1,25 @@
+import { motion, useMotionValue, useSpring } from "motion/react";
 import { useChat } from "@ai-sdk/react";
 import { portTransport } from "@/lib/ai/transport";
-import { useEffect, useState } from "react";
-import { motion, useMotionValue, useSpring } from "motion/react";
+import { useEffect, useRef, useState } from "react";
+import { unlockAudio } from "@/lib/audio";
 import Thread from "./thread";
 import Surface from "./surface";
 import Composer from "./chat/composer";
-import { unlockAudio } from "@/lib/audio";
+import type { FileUIPart } from "ai";
+import type { RippleUIMessage } from "@/lib/ai/agent/types";
 
-export default function ChatOverlayShell() {
-  const { messages, sendMessage, status, stop, error, regenerate } = useChat({
-    transport: portTransport,
-  });
+export default function ChatOverlayShell({ image }: { image: string }) {
+  const { messages, sendMessage, status, stop, error, regenerate } =
+    useChat<RippleUIMessage>({
+      transport: portTransport,
+    });
 
+  // Composer input
   const [input, setInput] = useState("");
+  const screenshotSent = useRef(false);
+
+  // Thread resize
   const [threadCollapsed, setThreadCollapsed] = useState(false);
   const virtual = useMotionValue(MIN);
   const height = useSpring(MIN, { stiffness: 600, damping: 30 });
@@ -28,6 +35,7 @@ export default function ChatOverlayShell() {
   const busy = status === "submitted" || status === "streaming";
   const hasMessages = messages.length > 0;
 
+  // Message send handler
   function handleSend() {
     const text = input.trim();
     if (busy) {
@@ -35,7 +43,19 @@ export default function ChatOverlayShell() {
       return;
     }
     if (!text) return;
-    sendMessage({ text });
+
+    if (!screenshotSent.current && image) {
+      screenshotSent.current = true;
+      const file: FileUIPart = {
+        type: "file",
+        mediaType: mediaTypeFromDataUrl(image),
+        url: image,
+        filename: "screenshot.jpg",
+      };
+      sendMessage({ text, files: [file] });
+    } else {
+      sendMessage({ text });
+    }
     setInput("");
   }
 
@@ -90,6 +110,11 @@ const RESISTANCE = 0.55;
 const BAND = 60;
 
 // Rubber band function
+function mediaTypeFromDataUrl(dataUrl: string): string {
+  const match = /^data:([^;,]+)/.exec(dataUrl);
+  return match?.[1] ?? "image/jpeg";
+}
+
 const rubberBand = (value: number) => {
   const edge = value < MIN ? MIN : value > MAX ? MAX : null;
   if (edge === null) return value;
